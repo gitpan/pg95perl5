@@ -6,4 +6,5 @@ Pg.pm
 Pg.xs
 README
 test.pl
+test.pl.oldstyle
 typemap
