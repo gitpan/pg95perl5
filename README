@@ -1,18 +1,37 @@
 #-------------------------------------------------------
 #
-# $Id: README,v 2.2 1996/11/24 09:21:14 mergl Exp $
+# $Id: README,v 2.6 1997/01/25 07:14:04 mergl Exp $
+#
+# Copyright (c) 1997  Edmund Mergl
 #
 #-------------------------------------------------------
 
 DESCRIPTION:
 ------------
 
-This is version 1.4 of pg95perl5.
+This is version 1.5 of pg95perl5.
 
 Pg95perl5 is an interface between Larry Wall's language perl version 5 and the
-database Postgres95. This has been done by using the Perl5 application program-
-ming interface for C extensions which calls the Postgres programmer's interface
-LIBQ. pg95perl5 tries to implement the LIBPQ-interface as close, as possible.
+database PostgreSQL (previously Postgres95). This has been done by using the 
+Perl5 application programming interface for C extensions which calls the 
+Postgres programmer's interface LIBQ. Pg95perl5 tries to implement the LIBPQ-
+interface as close, as possible.
+
+You have the choice between two different interfaces: the old C-style like
+interface and a new one, using a more Perl-ish like style. The old style 
+has the benefit, that existing Libpq applications can easily be ported to 
+perl. The new style uses class packages and might be more familiar for C++-
+programmers.
+
+
+
+COPYRIGHT INFO
+--------------
+
+This Postgres-Perl interface is copyright 1996, Edmund Mergl. You are 
+free to use it for any purpose, commercial or noncommercial, provided 
+that if you redistribute the source code, this statement of copyright 
+remains attached.
 
 
 IF YOU HAVE PROBLEMS:
@@ -22,7 +41,7 @@ Please send comments and bug-reports to <E.Mergl@bawue.de>
 
 Please include the output of perl -v
                          and perl -V
-           and the version of postgres95
+           and the version of PostgreSQL
            and the version of pg95perl5
 in your bug-report.
 
@@ -31,15 +50,15 @@ REQUIREMENTS:
 -------------
 
   - perl5.003
-  - Postgres95-1.09
+  - PostgreSQL-6.0
 
 
 PLATFORMS:
 ----------
 
   This release of pg95perl5 has been developed using Linux 2.0 with 
-  dynamic loading for the perl extensions. It also works using static
-  loading. Let me know, if there are any problems with other platforms.
+  dynamic loading for the perl extensions. Let me know, if there are 
+  any problems with other platforms.
 
 
 INSTALLATION:
@@ -49,19 +68,15 @@ Using dynamic loading for perl extensions, the preferred method is to unpack
 the tar file outside the perl source tree. This assumes, that you already
 have installed perl5.
 
-Make sure, that the locations of the postgres include-files and the libpq-
-library in Makefile.PL are correct. Then
+The Makefile checks the environment variable POSTGRESHOME as well some 
+standard locations, to find the root directory of your Postgres installation.
  
-   perl Makefile.PL
-   make
-   make install
+1.   perl Makefile.PL
+2.   make
+3.   make test
+4.   make install
 
-
-If you choose static loading, the contents of this package is assumed to be
-in the subdirectory ext/Pg in the perl source tree. Build perl5 as described
-in the README of perl:
- - when running Configure, add Pg to the list of static extensions.
- - run make depend, make, make install.
+( 1. to 3. as normal user, not as root ! )
 
 
 TESTING:
@@ -72,9 +87,14 @@ Note, that the user running this script must have been created with
 the access rights to create databases *AND* users ! Do not run this
 script as root !
 
+If you are using the shared library libpq.so, make sure, your dynamic loader 
+is able to find libpq.so. With Linux the command /sbin/ldconfig -v should tell 
+you, where it finds libpq.so. If not, you need to add an appropriate entry to 
+/etc/ld.so.conf or to the environment variable LD_LIBRARY_PATH.
+
 
 ---------------------------------------------------------------------------
 
-   Edmund Mergl <E.Mergl@bawue.de>                       November 20, 1996
+   Edmund Mergl <E.Mergl@bawue.de>                       January 2, 1997
 
 ---------------------------------------------------------------------------

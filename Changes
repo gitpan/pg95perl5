@@ -36,3 +36,11 @@ Revision history for Perl extension Pg.
 
 1.4.2  21 Nov 1996
 	- added a more Perl-like syntax
+
+
+1.5    02 Jan 1997
+	- adapted to PostgreSQL-6.0
+        - new functions PQconnectdb, PQuser
+        - changed name of method 'new' to 'setdb'
+
+

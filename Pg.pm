@@ -1,6 +1,8 @@
 #-------------------------------------------------------
 #
-# $Id: Pg.pm,v 2.3 1996/11/24 10:52:46 mergl Exp $
+# $Id: Pg.pm,v 2.6 1997/01/19 06:25:12 mergl Exp $
+#
+# Copyright (c) 1997  Edmund Mergl
 #
 #-------------------------------------------------------
 
@@ -19,10 +21,13 @@ require 5.003;
 
 # Items to export into callers namespace by default.
 @EXPORT = qw(
+	PQconnectdb
+	PQconndefaults
 	PQsetdb
 	PQfinish
 	PQreset
 	PQdb
+	PQuser
 	PQhost
 	PQoptions
 	PQport
@@ -78,7 +83,7 @@ require 5.003;
 	PGRES_InvalidOid
 );
 
-$VERSION = '1.4.2';
+$VERSION = '1.5';
 
 sub AUTOLOAD {
     # This AUTOLOAD is used to 'autoload' constants from the constant()
@@ -135,7 +140,7 @@ __END__
 
 =head1 NAME
 
-Pg - Perl extension for Postgres95
+Pg - Perl extension for PostgreSQL
 
 
 =head1 SYNOPSIS
@@ -143,7 +148,7 @@ Pg - Perl extension for Postgres95
 new style:
 
     use Pg;
-    $conn = Pg::new('', '', '', '', 'template1');
+    $conn = Pg::connectdb("dbname = template1");
     $result = $conn->exec("create database test");
 
 
@@ -159,8 +164,8 @@ you may also use the old style:
 =head1 DESCRIPTION
 
 The Pg module permits you to access all functions of the 
-Libpq interface of Postgres95. Libpq is the programmer's 
-interface to Postgres95. Pg tries to resemble this 
+Libpq interface of PostgreSQL. Libpq is the programmer's 
+interface to PostgreSQL. Pg tries to resemble this 
 interface as close as possible. For examples of how to 
 use this module, look at the file test.pl. For further 
 examples look at the Libpq applications in 
@@ -217,10 +222,10 @@ Notice the inner loop !
 
 =head1 CAVEATS
 
-There are two exceptions, where the perl-functions differs 
-from the C-counterpart: PQprint and PQnotifies. These 
-functions deal with structures, which have been implemented 
-in perl using lists. 
+There are few exceptions, where the perl-functions differs 
+from the C-counterpart: PQprint, PQnotifies and PQconndefaults. 
+These functions deal with structures, which have been 
+implemented in perl using lists or hash. 
 
 
 =head1 FUNCTIONS
@@ -236,7 +241,7 @@ database. In Libpq a connection is represented by a structure called
 PGconn. Using the appropriate methods you can access almost all 
 fields of this structure.
 
-    $conn = Pg::new($pghost, $pgport, $pgoptions, $pgtty, $dbname)
+    $conn = Pg::setdb($pghost, $pgport, $pgoptions, $pgtty, $dbname)
 
 Opens a new connection to the backend. You may use an empty string for
 any argument, in which case first the environment is checked and then 
@@ -245,6 +250,24 @@ to the PGconn structure ) must be used in subsequent commands for unique
 identification. Before using $conn you should call $conn->status to ensure, 
 that the connection was properly made. Use the methods below to access 
 the contents of the PGconn structure.
+
+    $conn = Pg::connectdb("option = value")
+
+Opens a new connection to the backend using connection information in a string. 
+The connection identifier $conn ( a pointer to the PGconn structure ) must be 
+used in subsequent commands for unique identification. Before using $conn you 
+should call $conn->status to ensure, that the connection was properly made. 
+Use the methods below to access the contents of the PGconn structure.
+
+    $Option_ref = Pg::conndefaults()
+
+    while(($key, $val) = each %$Option_ref) {
+        print "$key, $val\n";
+    }
+
+Returns a reference to a hash containing as keys all possible options for 
+connectdb(). The values are the current defaults. This function differs from 
+his C-counterpart, which returns the complete conninfoOption structure. 
 
     PQfinish($conn)
 
@@ -256,9 +279,13 @@ Closes the connection to the backend and frees all memory.
 Resets the communication port with the backend and tries
 to establish a new connection.
 
-    $dbName = $conn->db
+    $dbname = $conn->db
 
 Returns the database name of the connection.
+
+    $pguser = $conn->user
+
+Returns the Postgres user name of the connection.
 
     $pghost = $conn->host
 
@@ -418,7 +445,7 @@ Kept for backward compatibility. Use print.
 
 Prints out all the tuples in an intelligent  manner. This function 
 differs from the C-counterpart. The struct PQprintOpt has been 
-implemented by a list. This list is of variable length, in order 
+implemented with a list. This list is of variable length, in order 
 to care for the character array fieldName in PQprintOpt. 
 The arguments $header, $align, $standard, $html3, $expanded, $pager
 are boolean flags. The arguments $fieldSep, $tableOpt, $caption

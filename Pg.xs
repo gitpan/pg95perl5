@@ -1,6 +1,8 @@
 /*-------------------------------------------------------
  *
- * $Id: Pg.xs,v 2.3 1996/11/24 09:32:17 mergl Exp $
+ * $Id: Pg.xs,v 2.5 1997/01/19 06:25:13 mergl Exp $
+ *
+ * Copyright (c) 1997  Edmund Mergl
  *
  *-------------------------------------------------------*/
 
@@ -193,6 +195,31 @@ constant(name,arg)
 
 
 PGconn *
+PQconnectdb(conninfo)
+	char *	conninfo
+	PROTOTYPE: $
+	CODE:
+		RETVAL = PQconnectdb((const char *)conninfo);
+	OUTPUT:
+		RETVAL
+
+
+HV *
+PQconndefaults()
+	CODE:
+		PQconninfoOption *infoOption;
+		RETVAL = newHV();
+                if (infoOption = PQconndefaults()) {
+			while (infoOption->keyword != NULL) {
+				hv_store(RETVAL, infoOption->keyword, strlen(infoOption->keyword), newSVpv(infoOption->val, 0), 0);
+				infoOption++;
+			}
+		}
+	OUTPUT:
+		RETVAL
+
+
+PGconn *
 PQsetdb(pghost, pgport, pgoptions, pgtty, dbname)
 	char *	pghost
 	char *	pgport
@@ -216,6 +243,12 @@ PQreset(conn)
 
 char *
 PQdb(conn)
+	PGconn *	conn
+	PROTOTYPE: $
+
+
+char *
+PQuser(conn)
 	PGconn *	conn
 	PROTOTYPE: $
 
@@ -319,15 +352,10 @@ PQnotifies(conn)
 		PGnotify *notify;
 	PPCODE:
 		notify = PQnotifies(conn);
-		EXTEND(sp, 2);
 		if (notify) {
-
-			PUSHs(sv_2mortal(newSVpv((char *)notify->relname, 0)));
-			PUSHs(sv_2mortal(newSViv(notify->be_pid)));
+			XPUSHs(sv_2mortal(newSVpv((char *)notify->relname, 0)));
+			XPUSHs(sv_2mortal(newSViv(notify->be_pid)));
 			free(notify);
-		} else {
-			PUSHs(sv_newmortal());
-			PUSHs(sv_newmortal());
 		}
 
 
@@ -584,7 +612,32 @@ lo_export(conn, lobjId, filename)
 
 
 PG_conn
-new (pghost, pgport, pgoptions, pgtty, dbname)
+connectdb(conninfo)
+	char *	conninfo
+	PROTOTYPE: $
+	CODE:
+		RETVAL = PQconnectdb((const char *)conninfo);
+	OUTPUT:
+		RETVAL
+
+
+HV *
+conndefaults()
+	CODE:
+		PQconninfoOption *infoOption;
+		RETVAL = newHV();
+                if (infoOption = PQconndefaults()) {
+			while (infoOption->keyword != NULL) {
+				hv_store(RETVAL, infoOption->keyword, strlen(infoOption->keyword), newSVpv(infoOption->val, 0), 0);
+				infoOption++;
+			}
+		}
+	OUTPUT:
+		RETVAL
+
+
+PG_conn
+setdb(pghost, pgport, pgoptions, pgtty, dbname)
 	char *	pghost
 	char *	pgport
 	char *	pgoptions
@@ -595,7 +648,6 @@ new (pghost, pgport, pgoptions, pgtty, dbname)
 		RETVAL = PQsetdb(pghost, pgport, pgoptions, pgtty, dbname);
 	OUTPUT:
 		RETVAL
-
 
 
 
@@ -623,6 +675,12 @@ PQreset(conn)
 
 char *
 PQdb(conn)
+	PG_conn	conn
+	PROTOTYPE: $
+
+
+char *
+PQuser(conn)
 	PG_conn	conn
 	PROTOTYPE: $
 
@@ -682,6 +740,11 @@ PQexec(conn, query)
 	PG_conn	conn
 	char *	query
 	PROTOTYPE: $$
+	CODE:
+		RETVAL = PQexec(conn, query);
+                if (! RETVAL) { RETVAL = (PGresult *)calloc(1, sizeof(PGresult)); }
+	OUTPUT:
+		RETVAL
 
 
 int
@@ -721,15 +784,10 @@ PQnotifies(conn)
 		PGnotify *notify;
 	PPCODE:
 		notify = PQnotifies(conn);
-		EXTEND(sp, 2);
 		if (notify) {
-
-			PUSHs(sv_2mortal(newSVpv((char *)notify->relname, 0)));
-			PUSHs(sv_2mortal(newSViv(notify->be_pid)));
+			XPUSHs(sv_2mortal(newSVpv((char *)notify->relname, 0)));
+			XPUSHs(sv_2mortal(newSViv(notify->be_pid)));
 			free(notify);
-		} else {
-			PUSHs(sv_newmortal());
-			PUSHs(sv_newmortal());
 		}
 
 
@@ -969,3 +1027,4 @@ PQprint(res, fout, header, align, standard, html3, expanded, pager, fieldSep, ta
 		}
 		PQprint(fout, res, &ps);
 		Safefree(ps.fieldName);
+
