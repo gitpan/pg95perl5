@@ -1,12 +1,16 @@
 /*-------------------------------------------------------
  *
- * $Id: Pg.xs,v 1.2 1995/07/27 19:57:51 li00357 Exp $
+ * Pg.xs,v 1.4 1995/10/15 17:42:14 mergl Exp
  *
  *-------------------------------------------------------*/
 
 #include "EXTERN.h"
 #include "perl.h"
 #include "XSUB.h"
+
+#ifdef bool
+#undef bool
+#endif
 
 #include "libpq-fe.h"
 
@@ -101,6 +105,7 @@ PQgetline(conn, maxlen)
 	    PUSHs(sv_2mortal(newSVpv((char*)string, strlen(string)))) ;
 	    free(string) ;
 	}
+
 
 
 int

@@ -1,13 +1,13 @@
 #-------------------------------------------------------
 #
-# $Id: README,v 1.2 1995/07/27 19:57:52 li00357 Exp $
+# README,v 1.4 1995/10/15 17:42:15 mergl Exp
 #
 #-------------------------------------------------------
 
 DESCRIPTION:
 ------------
 
-This is version 1.1.1 of pg95perl5.
+This is version 1.2.0 of pg95perl5.
 
 Pg95perl5 is an interface between Larry Wall's language perl version 5 and the
 database Postgres95. This has been done by using the Perl 5 application program-
@@ -32,6 +32,11 @@ Bug fix in PQgetline.
 adapted to postgres95-beta0.03
 Note: the libpq interface has changed completely !
 
+1.2.0
+README updated
+doQuery() in Pg.pm now returns 0 upon success
+testlibpq.pl: added test for PQgetline()
+
 
 FILES:
 ------
@@ -51,7 +56,7 @@ REQUIREMENTS:
 -------------
 
   - perl5.001m
-  - Postgres95-beta0.03 with all available patches !!!
+  - Postgres95-1.0
 
 
 PLATFORMS:
@@ -127,6 +132,6 @@ argument.
 
 ---------------------------------------------------------------------------
 
-   Edmund Mergl                                       July 27, 1995
+   Edmund Mergl                                       Oktober 20, 1995
 
 ---------------------------------------------------------------------------

@@ -1,14 +1,14 @@
 #-------------------------------------------------------
 #
-# $Id: typemap,v 1.2 1995/07/27 19:57:53 li00357 Exp $
+# typemap,v 1.3 1995/10/15 17:26:47 mergl Exp
 #
 #-------------------------------------------------------
 
 TYPEMAP
-PGconn      *	T_PTR
-PGresult    *	T_PTR
-PGnotify    *	T_PTR
-PQArgBlock  *	T_PTR
+PGconn      *	T_PTROBJ
+PGresult    *	T_PTROBJ
+PGnotify    *	T_PTROBJ
+PQArgBlock  *	T_PTROBJ
 ConnStatusType	T_IV
 ExecStatusType	T_IV
 Oid		T_IV

@@ -1,8 +1,8 @@
-#!/usr/local/bin/perl
+#!/usr/bin/perl
 
 #-------------------------------------------------------
 #
-# $Id: testlibpq.pl,v 1.2 1995/07/27 19:57:53 li00357 Exp $
+# testlibpq.pl,v 1.3 1995/10/15 17:26:46 mergl Exp
 #
 #-------------------------------------------------------
 #
@@ -63,11 +63,11 @@ test_append();
 print("\nRelation person after appends:\n");
 test_functions();
 
-print("\nTesting copy:\n");
-test_copy();
+print("\nTesting copy from stdin:\n");
+test_copy_in();
 
-print("\nRelation person after copy:\n");
-test_functions();
+print("\nTesting copy to stdout:\n");
+test_copy_out();
 
 print("\nRemoving from relation person:\n");
 test_remove();
@@ -180,7 +180,7 @@ sub test_functions {
 }
 
 
-sub test_copy {
+sub test_copy_in {
     $cmd = "copy person from stdin";
     $result = PQexec($conn, $cmd);
     &good_bye() if $PGRES_COPY_IN != PQresultStatus($result) ;
@@ -189,6 +189,20 @@ sub test_copy {
     PQputline($conn, "bob	61	(3,4)\n");
     PQputline($conn, "sally	39	(5,6)\n");
     PQputline($conn, ".\n");
+    PQendcopy($conn);
+    PQclear($result);
+}
+
+
+sub test_copy_out {
+    $cmd = "copy person to stdout";
+    $result = PQexec($conn, $cmd);
+    &good_bye() if $PGRES_COPY_OUT != PQresultStatus($result) ;
+
+    while ( $_ = PQgetline($conn, 100) ) {
+        last if ( $_ eq '.' );
+        print "$_\n" ;
+    }
     PQendcopy($conn);
     PQclear($result);
 }
