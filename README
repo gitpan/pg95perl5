@@ -1,83 +1,35 @@
 #-------------------------------------------------------
 #
-# README,v 1.4 1995/10/15 17:42:15 mergl Exp
+# $Id: README,v 2.0 1996/10/22 20:31:54 mergl Exp $
 #
 #-------------------------------------------------------
 
 DESCRIPTION:
 ------------
 
-This is version 1.2.0 of pg95perl5.
+This is version 1.3 of pg95perl5.
 
 Pg95perl5 is an interface between Larry Wall's language perl version 5 and the
-database Postgres95. This has been done by using the Perl 5 application program-
+database Postgres95. This has been done by using the Perl5 application program-
 ming interface for C extensions which calls the Postgres programmer's interface
-LIBQ.
+LIBQ. pg95perl5 trys to implement the LIBPQ-interface as close, as possible.
 
-Pg95perl5 is based on the pgperl package from Igor Metz and Robert Withrow.
-Because the perl interface changed, this interface has been rewritten
-following the guidelines from the perlapi manpage. Also the test script
-has been adapted to SQL, which has replaced the query language POSTQUEL.
-
-
-CHANGES:
---------
-
-1.1:
-
-Bug fix in PQgetline.
-
-1.1.1
-
-adapted to postgres95-beta0.03
-Note: the libpq interface has changed completely !
-
-1.2.0
-README updated
-doQuery() in Pg.pm now returns 0 upon success
-testlibpq.pl: added test for PQgetline()
-
-
-FILES:
-------
-
-The pg95perl5 distribution contains the following files:
-
- o Makefile.PL
- o Pg.pm
- o Pg.xs
- o README
- o testlibpq.out
- o testlibpq.pl
- o typemap
+Please send comments and bug reports to <E.Mergl@bawue.de>
 
 
 REQUIREMENTS:
 -------------
 
-  - perl5.001m
-  - Postgres95-1.0
+  - perl5.003
+  - Postgres95-1.08
 
 
 PLATFORMS:
 ----------
 
-  This release of pg95perl5 has been developed using Linux 1.2.9-ELF with
+  This release of pg95perl5 has been developed using Linux 2.0 with 
   dynamic loading for the perl extensions. It also works using static
   loading. Let me know, if there are any problems with other platforms.
-
-
-NOTE:
------
-
-Please send comments and bug reports to <EMergl@bawue.de>
-
-or to
-
-Edmund Mergl
-Im Haldenhau 9
-D 70565 Stuttgart
-fax: +49=711-742857
 
 
 INSTALLATION:
@@ -85,11 +37,10 @@ INSTALLATION:
 
 Using dynamic loading for perl extensions, the preferred method is to unpack
 the tar file outside the perl source tree. This assumes, that you already
-have installed perl5.001 ( patchlevel e or higher ).
+have installed perl5.
 
 Make sure, that the locations of the postgres include-files and the libpq-
-library in Makefile.PL are correct. If you have only a static version of
-libpq, change in Makefile.PL libpq.so.1 into libpq.a.  Then
+library in Makefile.PL are correct. Then
  
    perl Makefile.PL
    make
@@ -106,32 +57,14 @@ in the README of perl:
 TESTING:
 --------
 
-Run testlibpq.pl and compare the output with testlibpq.out.
+Run 'make test'.
 Note, that the user running this script must have been created with
-the access rights to create databases AND users !
-
-
-GUIDELINES:
------------
-
-The file testlibpq.pl should be read to see, how this interface can be used.
-Also take a look on Pg.pm which contains one additional user-function.
-
-All the interface-functions are documented in the LIBPQ-section of the Postgres
-Reference Manual. There is one exception, where the parameters of a function
-have been changed:
-
-        original C-function                    pg95perl5 interface
-        -------------------                    -------------------
-
-int  PQgetline(char *string, int length)  ($ret, $string) = PQgetline($length)
-
-This has been done, because perl allows only scalars to be returned as
-argument.
+the access rights to create databases *AND* users ! Do not run this
+script as root !
 
 
 ---------------------------------------------------------------------------
 
-   Edmund Mergl                                       Oktober 20, 1995
+   Edmund Mergl <E.Mergl@bawue.de>                       Oktober 20, 1996
 
 ---------------------------------------------------------------------------

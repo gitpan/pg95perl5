@@ -1,15 +1,14 @@
 #-------------------------------------------------------
 #
-# typemap,v 1.3 1995/10/15 17:26:47 mergl Exp
+# $Id: typemap,v 2.0 1996/10/22 20:31:56 mergl Exp $
 #
 #-------------------------------------------------------
 
 TYPEMAP
-PGconn      *	T_PTROBJ
-PGresult    *	T_PTROBJ
-PGnotify    *	T_PTROBJ
-PQArgBlock  *	T_PTROBJ
+PGconn      *	T_PTRREF
+PGresult    *	T_PTRREF
 ConnStatusType	T_IV
 ExecStatusType	T_IV
 Oid		T_IV
 int2		T_IV
+bool		T_IV

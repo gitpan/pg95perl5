@@ -1,13 +1,10 @@
-# -------------------------------------------------------
-#
-# Makefile.PL,v 1.2 1995/07/27 19:57:50 li00357 Exp
-#
-# -------------------------------------------------------
-
 use ExtUtils::MakeMaker;
-
+# See lib/ExtUtils/MakeMaker.pm for details of how to influence
+# the contents of the Makefile that is written.
 WriteMakefile(
-	'NAME'     => 'Pg',
-	'MYEXTLIB' => ' /usr/local/postgres95/lib/libpq.so.1',
-	'INC'      => ' -I /usr/local/postgres95/include'
+    'NAME'	=> 'Pg',
+    'VERSION_FROM' => 'Pg.pm',
+    'LIBS'	=> ['-L/usr/local/postgres95/lib -lpq'],
+    'DEFINE'	=> '',
+    'INC'	=> '-I/usr/local/postgres95/include',
 );
