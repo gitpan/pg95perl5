@@ -1,0 +1,15 @@
+#-------------------------------------------------------
+#
+# $Id: typemap,v 1.2 1995/07/27 19:57:53 li00357 Exp $
+#
+#-------------------------------------------------------
+
+TYPEMAP
+PGconn      *	T_PTR
+PGresult    *	T_PTR
+PGnotify    *	T_PTR
+PQArgBlock  *	T_PTR
+ConnStatusType	T_IV
+ExecStatusType	T_IV
+Oid		T_IV
+int2		T_IV
