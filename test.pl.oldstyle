@@ -1,6 +1,6 @@
 #-------------------------------------------------------
 #
-# $Id: test.pl.oldstyle,v 2.4 1997/01/19 06:25:16 mergl Exp $
+# $Id: test.pl.oldstyle,v 2.5 1997/02/15 08:52:54 mergl Exp $
 #
 # Copyright (c) 1997  Edmund Mergl
 #
@@ -11,7 +11,7 @@
 
 ######################### We start with some black magic to print on failure.
 
-BEGIN { $| = 1; print "1..67\n"; }
+BEGIN { $| = 1; print "1..60\n"; }
 END {print "not ok 1\n" unless $loaded;}
 use Pg;
 $loaded = 1;
@@ -55,11 +55,8 @@ $| = 1;
 #	PQclear()
 #	PQprint()
 #	PQnotifies()
-#	PQlo_open()
-#	PQlo_close()
-#	PQlo_read()
-#	PQlo_write()
-#	PQlo_creat()
+#	PQlo_import()
+#	PQlo_export()
 #	PQlo_unlink()
 
 ######################### the following functions will not be tested
@@ -71,10 +68,13 @@ $| = 1;
 #	PQgetlength()
 #	PQgetisnull()
 #	PQprintTuples()
+#	PQlo_open()
+#	PQlo_close()	!! seems to be broken in pgsql !!
+#	PQlo_read()
+#	PQlo_write()
+#	PQlo_creat()
 #	PQlo_lseek()
 #	PQlo_tell()
-#	PQlo_import()
-#	PQlo_export()
 
 ######################### handles error condition
 
@@ -255,62 +255,30 @@ PQprint(PRINT, $result, 0, 0, 0, 0, 1, 0, " ", "", "", "myName");
 PQclear($result);
 close(PRINT) || die "bad PRINT: $!";
 
-######################### PQlo_creat, PQlo_open, PQlo_write
+######################### PQlo_import, PQlo_export, PQlo_unlink
 # 53-59
 
+$filename = 'typemap';
 $cwd = `pwd`;
 chop $cwd;
-$filename = "$cwd/typemap";
-open(LO, $filename) || die "can not open $filename: $!";
 
 $result = PQexec($conn, "BEGIN");
 cmp_eq(PGRES_COMMAND_OK, PQresultStatus($result));
 PQclear($result);
 
-$lobjId = PQlo_creat($conn, PGRES_INV_READ|PGRES_INV_WRITE);
-cmp_ne( 0, $lobjId);
-cmp_ne(-1, $lobjId);
+$lobjOid = PQlo_import($conn, "$cwd/$filename");
+cmp_ne( 0, $lobjOid);
 
-$lobj_fd = PQlo_open($conn, $lobjId, PGRES_INV_WRITE);
-cmp_ne(-1, $lobj_fd);
+cmp_ne(-1, PQlo_export($conn, $lobjOid, "/tmp/$filename"));
 
-$i = 0;
-while (($nbytes = read(LO, $buf, 1024)) > 0) {
-    $cmp_ary[$i] = $buf;
-    cmp_eq($nbytes, PQlo_write($conn, $lobj_fd, $buf, $nbytes));
-    $i++;
-}
-
-close(LO)|| die "bad LO: $!";
-cmp_eq(0, PQlo_close($conn, $lobj_fd));
+cmp_eq(-s "$cwd/$filename", -s "/tmp/$filename");
 
 $result = PQexec($conn, "END");
 cmp_eq(PGRES_COMMAND_OK, PQresultStatus($result));
 PQclear($result);
 
-######################### PQlo_read, PQlo_unlink
-# 60-65
-
-$result = PQexec($conn, "BEGIN");
-cmp_eq(PGRES_COMMAND_OK, PQresultStatus($result));
-PQclear($result);
-
-$lobj_fd = PQlo_open($conn, $lobjId, PGRES_INV_READ);
-cmp_ne(-1, $lobj_fd);
-
-$i = 0;
-while (($nbytes = PQlo_read($conn, $lobj_fd, $buf, 1024)) > 0) {
-    cmp_eq($cmp_ary[$i], $buf);
-    $i++;
-}
-
-cmp_eq(0, PQlo_close($conn, $lobj_fd));
-
-cmp_ne(-1, PQlo_unlink($conn, $lobjId));
-
-$result = PQexec($conn, "END");
-cmp_eq(PGRES_COMMAND_OK, PQresultStatus($result));
-PQclear($result);
+cmp_ne(-1, PQlo_unlink($conn, $lobjOid));
+unlink "/tmp/$filename";
 
 ######################### debug, PQuntrace
 
@@ -320,7 +288,7 @@ if ($DEBUG) {
 }
 
 ######################### disconnect and drop test database
-# 66-67
+# 59-60
 
 PQfinish($conn);
 
@@ -335,7 +303,7 @@ PQfinish($conn);
 
 ######################### hopefully
 
-print "all tests passed.\n" if 68 == $cnt;
+print "all tests passed.\n" if 61 == $cnt;
 
 ######################### utility functions
 

@@ -1,6 +1,6 @@
 /*-------------------------------------------------------
  *
- * $Id: Pg.xs,v 2.5 1997/01/19 06:25:13 mergl Exp $
+ * $Id: Pg.xs,v 2.6 1997/02/15 08:52:54 mergl Exp $
  *
  * Copyright (c) 1997  Edmund Mergl
  *
@@ -604,7 +604,7 @@ lo_export(conn, lobjId, filename)
 	PGconn *	conn
 	Oid	lobjId
 	char *	filename
-	PROTOTYPE: $$
+	PROTOTYPE: $$$
 	ALIAS:
 		PQlo_export = 1
 
@@ -878,7 +878,7 @@ lo_export(conn, lobjId, filename)
 	PG_conn	conn
 	Oid	lobjId
 	char *	filename
-	PROTOTYPE: $$
+	PROTOTYPE: $$$
 
 
 

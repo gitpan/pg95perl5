@@ -1,7 +1,7 @@
 # demo script, has been tested with:
-#  - Postgres-6.0
-#  - apache_1.2b4
-#  - mod_perl-0.90
+#  - postgresql-v6.0
+#  - apache_1.2b6
+#  - mod_perl-0.93
 #  - perl5.00317 + sfio-oct95
 
 require Apache::CGI;

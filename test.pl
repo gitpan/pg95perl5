@@ -1,6 +1,6 @@
 #-------------------------------------------------------
 #
-# $Id: test.pl,v 2.6 1997/01/25 07:14:06 mergl Exp $
+# $Id: test.pl,v 2.7 1997/02/15 08:52:54 mergl Exp $
 #
 # Copyright (c) 1997  Edmund Mergl
 #
@@ -11,7 +11,7 @@
 
 ######################### We start with some black magic to print on failure.
 
-BEGIN { $| = 1; print "1..67\n"; }
+BEGIN { $| = 1; print "1..60\n"; }
 END {print "not ok 1\n" unless $loaded;}
 use Pg;
 $loaded = 1;
@@ -55,11 +55,8 @@ $| = 1;
 #	getvalue
 #	print
 #	notifies
-#	lo_open
-#	lo_close
-#	lo_read
-#	lo_write
-#	lo_creat
+#	lo_import
+#	lo_export
 #	lo_unlink
 
 ######################### the following methods will not be tested
@@ -71,10 +68,13 @@ $| = 1;
 #	getlength
 #	getisnull
 #	printTuples
+#	lo_open
+#	lo_close	!! seems to be broken in pgsql !!
+#	lo_read
+#	lo_write
+#	lo_creat
 #	lo_seek
 #	lo_tell
-#	lo_import
-#	lo_export
 
 ######################### handles error condition
 
@@ -210,12 +210,12 @@ if (! defined($pid = fork)) {
 } elsif (! $pid) {
     # i'm the child
     sleep 2;
+    bless $conn;
     $conn = Pg::connectdb("dbname = $dbname");
     $result = $conn->exec("NOTIFY person");
-    exit; # destroys $conn
+    exit;
 }
 
-$conn = Pg::connectdb("dbname = $dbname");
 $result = $conn->exec("LISTEN person");
 cmp_eq(PGRES_COMMAND_OK, $result->resultStatus);
 cmp_eq("LISTEN", $result->cmdStatus);
@@ -238,58 +238,28 @@ $cnt ++;
 $result->print(PRINT, 0, 0, 0, 0, 1, 0, " ", "", "", "myName");
 close(PRINT) || die "bad PRINT: $!";
 
-######################### PQlo_creat, PQlo_open, PQlo_write
-# 53-59
+######################### PQlo_import, PQlo_export, PQlo_unlink
+# 53-58
 
+$filename = 'typemap';
 $cwd = `pwd`;
 chop $cwd;
-$filename = "$cwd/typemap";
-open(LO, $filename) || die "can not open $filename: $!";
 
 $result = $conn->exec("BEGIN");
 cmp_eq(PGRES_COMMAND_OK, $result->resultStatus);
 
-$lobjId = $conn->lo_creat(PGRES_INV_READ|PGRES_INV_WRITE);
-cmp_ne( 0,  $lobjId);
-cmp_ne(-1, $lobjId);
+$lobjOid = $conn->lo_import("$cwd/$filename");
+cmp_ne(0, $lobjOid);
 
-$lobj_fd = $conn->lo_open($lobjId, PGRES_INV_WRITE);
-cmp_ne(-1, $lobj_fd);
+cmp_ne(-1, $conn->lo_export($lobjOid, "/tmp/$filename"));
 
-$i = 0;
-while (($nbytes = read(LO, $buf, 1024)) > 0) {
-    $cmp_ary[$i] = $buf;
-    cmp_eq($nbytes, $conn->lo_write($lobj_fd, $buf, $nbytes));
-    $i++;
-}
-
-close(LO)|| die "bad LO: $!";
-cmp_ne(-1, $conn->lo_close($lobj_fd));
+cmp_eq(-s "$cwd/$filename", -s "/tmp/$filename");
 
 $result = $conn->exec("END");
 cmp_eq(PGRES_COMMAND_OK, $result->resultStatus);
 
-######################### PQlo_read, PQlo_unlink
-# 60-65
-
-$result = $conn->exec("BEGIN");
-cmp_eq(PGRES_COMMAND_OK, $result->resultStatus);
-
-$lobj_fd = $conn->lo_open($lobjId, PGRES_INV_READ);
-cmp_ne(-1, $lobj_fd);
-
-$i = 0;
-while (($nbytes = $conn->lo_read($lobj_fd, $buf, 1024)) > 0) {
-    cmp_eq($cmp_ary[$i], $buf);
-    $i++;
-}
-
-cmp_ne(-1, $conn->lo_close($lobj_fd));
-
-cmp_ne(-1, $conn->lo_unlink($lobjId));
-
-$result = $conn->exec("END");
-cmp_eq(PGRES_COMMAND_OK, $result->resultStatus);
+cmp_ne(-1, $conn->lo_unlink($lobjOid));
+unlink "/tmp/$filename";
 
 ######################### debug, PQuntrace
 
@@ -299,7 +269,7 @@ if ($DEBUG) {
 }
 
 ######################### disconnect and drop test database
-# 66-67
+# 59-60
 
 $conn = Pg::connectdb("dbname = $dbmain");
 cmp_eq(PGRES_CONNECTION_OK, $conn->status);
@@ -309,7 +279,7 @@ cmp_eq(PGRES_COMMAND_OK, $result->resultStatus);
 
 ######################### hopefully
 
-print "all tests passed.\n" if 68 == $cnt;
+print "all tests passed.\n" if 61 == $cnt;
 
 ######################### utility functions
 

@@ -1,6 +1,6 @@
 #-------------------------------------------------------
 #
-# $Id: README,v 2.6 1997/01/25 07:14:04 mergl Exp $
+# $Id: README,v 2.7 1997/02/15 08:52:54 mergl Exp $
 #
 # Copyright (c) 1997  Edmund Mergl
 #
@@ -39,9 +39,9 @@ IF YOU HAVE PROBLEMS:
 
 Please send comments and bug-reports to <E.Mergl@bawue.de>
 
-Please include the output of perl -v
-                         and perl -V
-           and the version of PostgreSQL
+Please include the output of perl -v,
+                         and perl -V,
+           the version of PostgreSQL,
            and the version of pg95perl5
 in your bug-report.
 
@@ -92,9 +92,14 @@ is able to find libpq.so. With Linux the command /sbin/ldconfig -v should tell
 you, where it finds libpq.so. If not, you need to add an appropriate entry to 
 /etc/ld.so.conf or to the environment variable LD_LIBRARY_PATH.
 
+Some linux distributions (eg slackware) have an incomplete perl installation.
+If you have compile errors like "XS_VERSION_BOOTCHECK undeclared", make a
+          'find /usr/lib/perl5 -name XSUB.h -print'
+If this file is not present, you need to recompile and reinstall perl.
+
 
 ---------------------------------------------------------------------------
 
-   Edmund Mergl <E.Mergl@bawue.de>                       January 2, 1997
+   Edmund Mergl <E.Mergl@bawue.de>                       February 12, 1997
 
 ---------------------------------------------------------------------------

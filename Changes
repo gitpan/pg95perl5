@@ -44,3 +44,6 @@ Revision history for Perl extension Pg.
         - changed name of method 'new' to 'setdb'
 
 
+1.5.4  12 Feb 1997
+        - changed test.pl for large objects:
+          test only lo_import and lo_export
