@@ -34,5 +34,5 @@ Revision history for Perl extension Pg.
 	  and PQgetline outputs '\.' as last line.
 
 
-1.4.0  21 Nov 1996
+1.4.2  21 Nov 1996
 	- added a more Perl-like syntax
