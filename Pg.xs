@@ -1,6 +1,6 @@
 /*-------------------------------------------------------
  *
- * $Id: Pg.xs,v 2.0 1996/10/22 20:31:53 mergl Exp $
+ * $Id: Pg.xs,v 2.1 1996/11/11 19:47:13 mergl Exp $
  *
  *-------------------------------------------------------*/
 
@@ -329,6 +329,13 @@ PQcmdStatus(res)
 char *
 PQoidStatus(res)
 	PGresult *	res
+	PREINIT:
+		const char *GAGA;
+	CODE:
+		GAGA = PQoidStatus(res);
+		RETVAL = (char *)GAGA;
+	OUTPUT:
+		RETVAL
 
 
 char *

@@ -1,6 +1,6 @@
 #-------------------------------------------------------
 #
-# $Id: Pg.pm,v 2.0 1996/10/22 20:31:52 mergl Exp $
+# $Id: Pg.pm,v 2.1 1996/11/11 19:47:12 mergl Exp $
 #
 #-------------------------------------------------------
 
@@ -78,7 +78,7 @@ require AutoLoader;
 	PGRES_InvalidOid
 );
 
-$VERSION = '1.3';
+$VERSION = '1.3.2';
 
 sub AUTOLOAD {
     # This AUTOLOAD is used to 'autoload' constants from the constant()
@@ -193,6 +193,7 @@ freed by the user:
 Pg.pm contains one convenience function: doQuery. It fills a
 two-dimensional array with the result of your query. Usage:
 
+C<
 Pg::doQuery($conn, "select attr1, attr2 from tbl", \@ary);
 
 for $i ( 0 .. $#ary ) {
@@ -201,6 +202,7 @@ for $i ( 0 .. $#ary ) {
     }
     print "\n";
 }
+>
 
 Notice the inner loop !
 
@@ -379,15 +381,15 @@ a function for asynchronous notification.
 B<PQputline($conn, $string)>
 
 Sends a string to the backend. The application must explicitly 
-send the single character "." to indicate to the backend that 
+send the two characters "\." to indicate to the backend that 
 it has finished sending its data. 
 
 B<$ret = PQgetline($conn, $string, $length)>
 
 Reads a string up to $length - 1 characters from the backend. 
 PQgetline returns EOF at EOF, 0 if the entire line has been read, 
-and 1 if the buffer is full. If a line consists of the single 
-character "." the backend has finished sending the results of 
+and 1 if the buffer is full. If a line consists of the two 
+characters "\." the backend has finished sending the results of 
 the copy command. 
 
 
@@ -482,7 +484,7 @@ Returns -1 upon failure, 1 otherwise.
 
 =head1 AUTHOR
 
-Edmund Mergl <E.Mergl@bawue.de>
+Edmund Mergl &ltE.Mergl@bawue.de&gt
 
 =head1 SEE ALSO
 

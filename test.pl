@@ -1,6 +1,6 @@
 #-------------------------------------------------------
 #
-# $Id: test.pl,v 2.0 1996/10/22 20:31:55 mergl Exp $
+# $Id: test.pl,v 2.1 1996/11/11 19:47:15 mergl Exp $
 #
 #-------------------------------------------------------
 
@@ -87,7 +87,7 @@ exe(PGRES_COPY_OUT, "copy person to stdout");
 $i = 50;
 while (-1 != $ret) {
     $ret = PQgetline($conn, $string, 256);
-    last if $string eq ".";
+    last if $string eq "\\.";
     cmp_eq("fred	$i	($i,10)" ,$string);
     $i += 10;
 }
@@ -107,7 +107,7 @@ for ($i=50; $i <= 90; $i = $i + 10) {
     # watch the tabs and do not forget the newlines
     PQputline($conn, "fred	$i	($i,10)\n");
 }
-PQputline($conn, ".\n");
+PQputline($conn, "\\.\n");
 
 cmp_eq(0, PQendcopy($conn));
 
